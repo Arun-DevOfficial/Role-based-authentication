@@ -13,7 +13,7 @@ const verifyAdmin = async (req, res, next) => {
   }
 
   try {
-    // Verify the token
+    // Verify the Token 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     // Check if the user exists in the database based on username
