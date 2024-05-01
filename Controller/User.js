@@ -1,7 +1,5 @@
-import Token from "jsonwebtoken";
 import UserModel from "../Model/UserModel.js";
 import bcrypt from "bcrypt";
-
 
 export const signUp = async (req, res) => {
   const { username, password, role } = req.body;
@@ -17,7 +15,7 @@ export const signUp = async (req, res) => {
     // Check if the user already exists with the same username and role
     const existingUser = await UserModel.findOne({
       username: username,
-      Role: role,
+      role: role,
     });
 
     if (existingUser) {
@@ -33,7 +31,7 @@ export const signUp = async (req, res) => {
     const newUser = new UserModel({
       username: username,
       password: hashedPassword,
-      Role: role,
+      role: role,
     });
 
     // Save the new user to the database
@@ -43,7 +41,7 @@ export const signUp = async (req, res) => {
     const User = {
       Username: username,
       Password: password,
-      Role: role,
+      role: role,
     };
 
     let token;
@@ -61,11 +59,9 @@ export const signUp = async (req, res) => {
   }
 };
 
-//to verify signUp
 export const signIn = async (req, res) => {
-  const { username, password, role } = req.user;
-
-  //Error Handling
+  const { username, password, role } = req.body;
+  // Error Handling
   try {
     // Check if both username, password, and role are provided
     if (!username || !password || !role) {
@@ -74,25 +70,31 @@ export const signIn = async (req, res) => {
         .json({ message: "Username, password, and role are required!" });
     }
 
-    // Check if the user with the same username and role
+    // Check if the user with the same username and role exists
     const existingUser = await UserModel.findOne({
       username: username,
-      Role: role,
+      role: role,
     });
-
-    // Verify the user exisiting or not
-    if (existingUser) {
-      return res.status(409).json({
-        message: "User already exists. Please try logging in instead.",
-      });
+    
+    if (!existingUser) {
+      // User doesn't exist
+      return res.status(401).json({ message: "User not found." });
     }
-    //To verify the paasword
-    const originalPassword = bcrypt.compare(password, existingUser.password);
+    console.log(password);
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
-    // Check whether password is correct or not
-    if (originalPassword)
-      return res.status(201).json({ message: "User Logged successfully..." });
+    if (passwordMatch) {
+      return res.status(200).json({ message: "User logged in successfully." });
+    } else {
+      // Password doesn't match
+      return res
+        .status(401)
+        .json({ message: "Incorrect username or password." });
+    }
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    // Internal server error
+    console.error("Error in sign in:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
