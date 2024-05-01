@@ -15,7 +15,7 @@ const verifyAdmin = async (req, res, next) => {
   if (!token) {
     return res
       .status(401)
-      .json({ message: "Access denied. No token provided." });
+      .json({ message: "Access denied.Contact to administrator." });
   }
 
   try {

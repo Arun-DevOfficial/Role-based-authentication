@@ -1,6 +1,7 @@
 import UserModel from "../Model/UserModel.js";
 import bcrypt from "bcrypt";
 
+// to make valid user
 export const signUp = async (req, res) => {
   const { username, password, role } = req.body;
 
@@ -59,6 +60,7 @@ export const signUp = async (req, res) => {
   }
 };
 
+//To verify user
 export const signIn = async (req, res) => {
   const { username, password, role } = req.body;
   // Error Handling
@@ -75,7 +77,7 @@ export const signIn = async (req, res) => {
       username: username,
       role: role,
     });
-    
+
     if (!existingUser) {
       // User doesn't exist
       return res.status(401).json({ message: "User not found." });
@@ -96,5 +98,15 @@ export const signIn = async (req, res) => {
     // Internal server error
     console.error("Error in sign in:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//To list all user
+export const getUser = async (req, res) => {
+  try {
+    const user = await UserModel.find();
+    if (user) return res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "internal server error" });
   }
 };
