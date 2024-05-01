@@ -13,9 +13,10 @@ const verifyAdmin = async (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1]; // Extract the token part from "Bearer token"
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Access denied.Contact to administrator." });
+    return res.status(401).json({
+      message:
+        "Permission denied. Please contact your administrator for assistance.",
+    });
   }
 
   try {
