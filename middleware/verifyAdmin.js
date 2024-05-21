@@ -8,7 +8,7 @@ configDotenv();
 // Middleware to verify user token
 const verifyAdmin = async (req, res, next) => {
   // Get the token from the request headers
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.cookie;
 
   const token = authHeader && authHeader.split(" ")[1]; // Extract the token part from "Bearer token"
 

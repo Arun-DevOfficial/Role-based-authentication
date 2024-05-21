@@ -1,10 +1,10 @@
 import UserModel from "../Model/UserModel.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // to make valid user
 export const signUp = async (req, res) => {
   const { username, password, role } = req.body;
-
   try {
     // Check if both username, password, and role are provided
     if (!username || !password || !role) {
@@ -21,7 +21,7 @@ export const signUp = async (req, res) => {
 
     if (existingUser) {
       return res.status(409).json({
-        message: "User already exists. Please try logging in instead.",
+        message: "User already exists. Please try login instead.",
       });
     }
 
@@ -49,7 +49,9 @@ export const signUp = async (req, res) => {
 
     if (role === "admin") {
       // To create token for registered user
-      token = await Token.sign(User, process.env.ACCESS_TOKEN_SECRET);
+      token = await jwt.sign(User, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
     }
 
     // Registration successful
